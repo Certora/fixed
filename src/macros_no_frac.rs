@@ -130,49 +130,6 @@ assert!(", if_signed_unsigned!($Signedness, "", "!"), "Fix::IS_SIGNED);
             }
 
             comment! {
-                "Creates a fixed-point number that has a bitwise
-representation identical to the given integer.
-
-# Examples
-
-```rust
-use fixed::{types::extra::U4, ", stringify!($Self), "};
-type Fix = ", stringify!($Self), "<U4>;
-// 0010.0000 = 2
-assert_eq!(Fix::from_bits(0b10_0000), 2);
-```
-";
-                #[inline]
-                #[must_use]
-                pub const fn from_bits(bits: $Inner) -> $Self<Frac> {
-                    $Self {
-                        bits,
-                        phantom: PhantomData,
-                    }
-                }
-            }
-
-            comment! {
-                "Creates an integer that has a bitwise representation
-identical to the given fixed-point number.
-
-# Examples
-
-```rust
-use fixed::{types::extra::U4, ", stringify!($Self), "};
-type Fix = ", stringify!($Self), "<U4>;
-// 2 is 0010.0000
-assert_eq!(Fix::from_num(2).to_bits(), 0b10_0000);
-```
-";
-                #[inline]
-                #[must_use]
-                pub const fn to_bits(self) -> $Inner {
-                    self.bits
-                }
-            }
-
-            comment! {
                 "Converts a fixed-point number from big endian to the target’s endianness.
 
 # Examples

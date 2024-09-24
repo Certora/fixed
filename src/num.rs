@@ -43,3 +43,44 @@ impl<Bits: FixedBits, Frac> Hash for Fixed<Bits, Frac> {
         self.bits.hash(state);
     }
 }
+
+impl<Bits: FixedBits, Frac> Fixed<Bits, Frac> {
+    /// Creates a fixed-point number that has a bitwise representation identical
+    /// to the given integer.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use fixed::types::extra::U4;
+    /// use fixed::Fixed;
+    /// type Fix = Fixed<i32, U4>;
+    /// // 0010.0000 = 2
+    /// assert_eq!(Fix::from_bits(0b10_0000), 2);
+    /// ```
+    #[inline]
+    #[must_use]
+    pub const fn from_bits(bits: Bits) -> Fixed<Bits, Frac> {
+        Fixed {
+            bits,
+            phantom: PhantomData,
+        }
+    }
+
+    /// Creates an integer that has a bitwise representation identical to the
+    /// given fixed-point number.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use fixed::types::extra::U4;
+    /// use fixed::Fixed;
+    /// type Fix = Fixed<Bits, U4>;
+    /// // 2 is 0010.0000
+    /// assert_eq!(Fix::from_num(2).to_bits(), 0b10_0000);
+    /// ```
+    #[inline]
+    #[must_use]
+    pub const fn to_bits(self) -> Bits {
+        self.bits
+    }
+}
