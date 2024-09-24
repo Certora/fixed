@@ -409,7 +409,7 @@ pub use crate::{
 };
 use crate::{
     log::Base,
-    traits::{FromFixed, ToFixed},
+    traits::{FixedBits, FromFixed, ToFixed},
     types::extra::{
         Diff, IsLessOrEqual, LeEqU128, LeEqU16, LeEqU32, LeEqU64, LeEqU8, Sum, True, Unsigned, U0,
         U12, U124, U125, U126, U127, U128, U13, U14, U15, U16, U28, U29, U30, U31, U32, U4, U5, U6,
@@ -467,6 +467,59 @@ mod macros_no_frac;
 mod macros_frac;
 #[macro_use]
 mod macros_const;
+
+/// A fixed-point number with `Frac` fractional bits.
+///
+/// The number has <i>n</i> bits, of which <i>f</i>&nbsp;=&nbsp;`Frac` are
+/// fractional bits and <i>n</i>&nbsp;&minus;&nbsp;<i>f</i> are integer bits.
+/// For signed numbers, the value <i>x</i> can lie in the range
+/// &minus;2<sup><i>n</i>&nbsp;&minus;&nbsp;1</sup>/2<sup><i>f</i></sup>&nbsp;≤&nbsp;<i>x</i>&nbsp;\<&nbsp;2<sup><i>n</i>&nbsp;&minus;&nbsp;1</sup>/2<sup><i>f</i></sup>.
+/// For unsigned numbers, the value <i>x</i> can lie in the range
+/// 0&nbsp;≤&nbsp;<i>x</i>&nbsp;\<&nbsp;2<sup><i>n</i></sup>/2<sup><i>f</i></sup>.
+/// The difference between successive numbers is constant throughout the range:
+/// <i>Δ</i>&nbsp;=&nbsp;1/2<sup><i>f</i></sup>.
+///
+/// For <code>Fixed\<Bits, [U0]></code>, <i>f</i>&nbsp;=&nbsp;0 and
+/// <i>Δ</i>&nbsp;=&nbsp;1, and the fixed-point number behaves like a number of
+/// type `Bits` with the value lying in the range
+/// &minus;2<sup><i>n</i>&nbsp;&minus;&nbsp;1</sup>&nbsp;≤&nbsp;<i>x</i>&nbsp;\<&nbsp;2<sup><i>n</i>&nbsp;&minus;&nbsp;1</sup>
+/// for signed numbers, or
+/// 0&nbsp;≤&nbsp;<i>x</i>&nbsp;\<&nbsp;2<sup><i>n</i></sup> for unsigned
+/// numbers.
+///
+/// `Frac` is an [`Unsigned`] as provided by the [*typenum* crate]; the plan is
+/// to to have a major version 2 where `Frac` is replaced by `FRAC` of type
+/// [`i32`] when the Rust compiler’s [`generic_const_exprs` feature] is ready
+/// and stabilized. An [alpha version] is already available.
+///
+/// `Fixed<Bits, Frac>` has the same size, alignment and ABI as `Bits`; it is
+/// `#[repr(transparent)]` with a number of type `Bits` as the only
+/// non-zero-sized field.
+///
+/// # Examples
+///
+/// ```rust
+/// use fixed::types::extra::U3;
+/// use fixed::Fixed;
+/// let eleven = Fixed::<i32, U3>::from_num(11);
+/// assert_eq!(eleven, Fixed::<i32, U3>::from_bits(11 << 3));
+/// assert_eq!(eleven, 11);
+/// assert_eq!(eleven.to_string(), "11");
+/// let two_point_75 = eleven / 4;
+/// assert_eq!(two_point_75, Fixed::<i32, U3>::from_bits(11 << 1));
+/// assert_eq!(two_point_75, 2.75);
+/// assert_eq!(two_point_75.to_string(), "2.8");
+/// ```
+///
+/// [*typenum* crate]: https://crates.io/crates/typenum
+/// [U0]: crate::types::extra::U0
+/// [`generic_const_exprs` feature]: https://github.com/rust-lang/rust/issues/76560
+/// [alpha version]: https://docs.rs/fixed/2.0.0-alpha/fixed/
+#[repr(transparent)]
+pub struct Fixed<Bits: FixedBits, Frac> {
+    pub(crate) bits: Bits,
+    phantom: PhantomData<Frac>,
+}
 
 macro_rules! fixed {
     (
@@ -559,11 +612,7 @@ assert_eq!(two_point_75.to_string(), \"2.8\");
 [`generic_const_exprs` feature]: https://github.com/rust-lang/rust/issues/76560
 [alpha version]: https://docs.rs/fixed/2.0.0-alpha/fixed/
 ";
-            #[repr(transparent)]
-            pub struct $Self<Frac> {
-                pub(crate) bits: $Inner,
-                phantom: PhantomData<Frac>,
-            }
+            pub type $Self<Frac> = Fixed<$Inner, Frac>;
         }
 
         impl<Frac> Clone for $Self<Frac> {
