@@ -56,6 +56,8 @@ use serde::{de::Deserialize, ser::Serialize};
 macro_rules! impl_bits {
     ($Bits:ident) => {
         impl FixedBits for $Bits {
+            const ZERO: $Bits = 0;
+            const ONE: $Bits = 1;
             const MIN: $Bits = $Bits::MIN;
             const MAX: $Bits = $Bits::MAX;
             const IS_SIGNED: bool = $Bits::MIN != 0;
@@ -138,6 +140,12 @@ where
     Self: FixedBitsOptionalSerde,
     Self: Sealed,
 {
+    /// Zero.
+    const ZERO: Self;
+
+    /// One.
+    const ONE: Self;
+
     /// The smallest value that can be represented by this integer type.
     const MIN: Self;
 
