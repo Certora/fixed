@@ -45,6 +45,84 @@ impl<Bits: FixedBits, Frac> Hash for Fixed<Bits, Frac> {
 }
 
 impl<Bits: FixedBits, Frac> Fixed<Bits, Frac> {
+    /// Zero.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use fixed::types::extra::U4;
+    /// use fixed::Fixed;
+    /// type Fix = Fixed<i32, U4>;
+    /// assert_eq!(Fix::ZERO, Fix::from_bits(0));
+    /// ```
+    pub const ZERO: Fixed<Bits, Frac> = Fixed::from_bits(Bits::ZERO);
+
+    /// The difference between any two successive representable numbers, <i>Δ</i>.
+    ///
+    /// If the number has <i>f</i>&nbsp;=&nbsp;`Frac` fractional bits, then
+    /// <i>Δ</i>&nbsp;=&nbsp;1/2<sup><i>f</i></sup>.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use fixed::types::extra::U4;
+    /// use fixed::Fixed;
+    /// type Fix = Fixed<i32, U4>;
+    /// assert_eq!(Fix::DELTA, Fix::from_bits(1));
+    /// // binary 0.0001 is decimal 0.0625
+    /// assert_eq!(Fix::DELTA, 0.0625);
+    /// ```
+    pub const DELTA: Fixed<Bits, Frac> = Fixed::from_bits(Bits::ONE);
+
+    /// The smallest value that can be represented.
+    ///
+    /// If the number has <i>f</i>&nbsp;=&nbsp;`Frac` fractional bits,
+    /// then
+    ///   * for signed numbers, the minimum is
+    ///     &minus;2<sup><i>n</i>&nbsp;&minus;&nbsp;1</sup>/2<sup><i>f</i></sup>.
+    ///   * for unsigned numbers, the minimum is 0.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use fixed::types::extra::U4;
+    /// use fixed::Fixed;
+    /// type Fix = Fixed<i32, U4>;
+    /// assert_eq!(Fix::MIN, Fix::from_bits(i32::MIN));
+    /// ```
+    pub const MIN: Fixed<Bits, Frac> = Fixed::from_bits(Bits::MIN);
+
+    /// The largest value that can be represented.
+    ///
+    /// If the number has <i>f</i>&nbsp;=&nbsp;`Frac` fractional bits, then
+    ///   * for signed numbers, the maximum is
+    ///     (2<sup><i>n</i>&nbsp;&minus;&nbsp;1</sup>/2<sup><i>f</i></sup>&nbsp;&minus;&nbsp;1)/2<sup><i>f</i></sup>.
+    ///   * for unsigned numbers, the maximum is
+    ///     (2<sup><i>n</i></sup>/2<sup><i>f</i></sup>&nbsp;&minus;&nbsp;1)/2<sup><i>f</i></sup>.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use fixed::types::extra::U4;
+    /// use fixed::Fixed;
+    /// type Fix = Fixed<i32, U4>;
+    /// assert_eq!(Fix::MAX, Fix::from_bits(i32::MAX));
+    /// ```
+    pub const MAX: Fixed<Bits, Frac> = Fixed::from_bits(Bits::MAX);
+
+    /// [`true`] if the number type is signed.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use fixed::types::extra::U4;
+    /// use fixed::Fixed;
+    /// type Fix = Fixed<i32, U4>;
+    /// assert!(Fixed::<i32, U4>::IS_SIGNED);
+    /// assert!(!Fixed::<u32, U4>::IS_SIGNED);
+    /// ```
+    pub const IS_SIGNED: bool = Bits::IS_SIGNED;
+
     /// Creates a fixed-point number that has a bitwise representation identical
     /// to the given integer.
     ///
