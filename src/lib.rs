@@ -390,6 +390,7 @@ mod inv_lerp;
 mod lerp;
 mod log;
 mod log10;
+mod num;
 mod prim_traits;
 mod saturating;
 #[cfg(feature = "serde")]
@@ -416,12 +417,9 @@ use crate::{
         U60, U61, U62, U63, U64, U7, U8,
     },
 };
+use core::marker::PhantomData;
 use core::num::{NonZeroU128, NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8};
-use core::{
-    hash::{Hash, Hasher},
-    marker::PhantomData,
-    ops::{Add, Sub},
-};
+use core::ops::{Add, Sub};
 
 /// A prelude to import useful traits.
 ///
@@ -613,32 +611,6 @@ assert_eq!(two_point_75.to_string(), \"2.8\");
 [alpha version]: https://docs.rs/fixed/2.0.0-alpha/fixed/
 ";
             pub type $Self<Frac> = Fixed<$Inner, Frac>;
-        }
-
-        impl<Frac> Clone for $Self<Frac> {
-            #[inline]
-            fn clone(&self) -> $Self<Frac> {
-                *self
-            }
-        }
-
-        impl<Frac> Copy for $Self<Frac> {}
-
-        impl<Frac> Default for $Self<Frac> {
-            #[inline]
-            fn default() -> Self {
-                $Self {
-                    bits: Default::default(),
-                    phantom: PhantomData,
-                }
-            }
-        }
-
-        impl<Frac> Hash for $Self<Frac> {
-            #[inline]
-            fn hash<H: Hasher>(&self, state: &mut H) {
-                self.bits.hash(state);
-            }
         }
 
         // inherent methods that do not require Frac bounds, some of which can thus be const
