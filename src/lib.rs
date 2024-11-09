@@ -744,6 +744,33 @@ fixed! {
     False, "128", FixedI128, i128, FixedI128, i128
 }
 
+macro_rules! certora_from_u64{
+    ($type: ty) => {
+        impl From<u64> for $type {
+            fn from(value: u64) -> Self {
+                // panic if value does not fit in 32 bits
+                let x = u32::try_from(value).unwrap();
+                Self::from(x)
+            }
+        }
+    }
+}
+
+certora_from_u64!(types::U63F1);
+certora_from_u64!(types::U62F2);
+certora_from_u64!(types::U61F3);
+certora_from_u64!(types::U60F4);
+certora_from_u64!(types::U59F5);
+certora_from_u64!(types::U58F6);
+certora_from_u64!(types::U57F7);
+certora_from_u64!(types::U56F8);
+certora_from_u64!(types::U55F9);
+certora_from_u64!(types::U54F10);
+certora_from_u64!(types::U53F11);
+certora_from_u64!(types::U52F12);
+certora_from_u64!(types::U51F13);
+certora_from_u64!(types::U50F14);
+
 /// The bit representation of a *binary128* floating-point number (`f128`).
 ///
 /// This type can be used to
